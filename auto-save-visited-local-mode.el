@@ -107,7 +107,7 @@ Aligned with `auto-save-visited-mode' behavior."
     (setq auto-save-visited-local--timer nil)))
 
 (defun auto-save-visited-local--update-timer ()
-  "Update the timer when the interval changes.
+  "Update the timer when the interval change.
 Restart the timer with the new interval if mode is active."
   (when auto-save-visited-local-mode
     (auto-save-visited-local--start-timer)))
@@ -117,10 +117,10 @@ Restart the timer with the new interval if mode is active."
   "Toggle automatic saving of the current buffer after idle time.
 
 Unlike `auto-save-visited-mode', this is a buffer-local minor mode
-that only affects the current buffer. After `auto-save-visited-local-interval'
+that only affects the current buffer.  After `auto-save-visited-local-interval'
 seconds of idle time, the buffer will be saved if it has been modified.
 
-This mode only works for buffers visiting files. Remote files are
+This mode only works for buffers visiting files.  Remote files are
 skipped by default for performance reasons.
 
 The behavior is aligned with `auto-save-visited-mode':
@@ -154,8 +154,9 @@ See also `auto-save-visited-mode' for the global equivalent."
 
 ;; Watch for interval changes (buffer-local)
 (defun auto-save-visited-local--interval-watcher (_symbol _newval operation where)
-  "Watch for changes to `auto-save-visited-local-interval'.
-Updates the timer if the mode is active in the current buffer."
+  "Watch for change to `auto-save-visited-local-interval'.
+OPERATION and WHERE specify the variable change context.
+Update the timer if the mode is active in the current buffer."
   (when (and (eq operation 'set)
              (eq where (current-buffer))
              (bound-and-true-p auto-save-visited-local-mode))
