@@ -150,7 +150,8 @@ See also `auto-save-visited-mode' for the global equivalent."
 (add-hook 'kill-buffer-hook
           (lambda ()
             (when (bound-and-true-p auto-save-visited-local-mode)
-              (auto-save-visited-local--stop-timer))))
+              (auto-save-visited-local--stop-timer)))
+          0 t)
 
 ;; Watch for interval changes (buffer-local)
 (defun auto-save-visited-local--interval-watcher (_symbol _newval operation where)
