@@ -1,6 +1,6 @@
 ;;; auto-save-visited-local-mode.el --- Buffer-local auto-save for visited files -*- lexical-binding: t -*-
 
-;; Copyright (C) 2025 Pierre <your-email@example.com>
+;; Copyright (C) 2025 Pierre <pierre@legall.im
 
 ;; Author: Pierre Le Gall <pierre@legall.im>
 ;; Maintainer: Pierre <pierre@legall.im>
