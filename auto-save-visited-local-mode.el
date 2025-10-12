@@ -20,8 +20,7 @@
 
 (defgroup auto-save-visited-local nil
   "Buffer-local automatic saving of visited files."
-  :group 'auto-save
-  :version "29.1")
+  :group 'auto-save)
 
 (defcustom auto-save-visited-local-interval 5
   "Number of seconds of idle time before auto-saving the buffer.
@@ -34,8 +33,7 @@ Used by `auto-save-visited-local-mode'."
   "If non-nil, do not display auto-save messages.
 This is the buffer-local equivalent of `auto-save-visited-silent'."
   :type 'boolean
-  :group 'auto-save-visited-local
-  :version "29.1")
+  :group 'auto-save-visited-local)
 
 (defcustom auto-save-visited-local-predicate nil
   "Predicate to determine whether to auto-save a buffer.
@@ -46,8 +44,7 @@ If nil, all file-visiting buffers will be auto-saved (subject to
 other conditions)."
   :type '(choice (const :tag "Auto-save all buffers" nil)
                  (function :tag "Custom predicate"))
-  :group 'auto-save-visited-local
-  :version "29.1")
+  :group 'auto-save-visited-local)
 
 (defvar-local auto-save-visited-local--timer nil
   "Timer for buffer-local auto-saving.
