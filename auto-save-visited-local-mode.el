@@ -67,15 +67,17 @@ Mimics the logic from `auto-save-visited-mode'."
   "Save the current buffer if appropriate.
 Aligned with `auto-save-visited-mode' behavior."
   (when (auto-save-visited-local--should-save-p)
-    (if auto-save-visited-local-silent
-        ;; Silent mode: suppress all messages
-        (let ((inhibit-message t)
-              (message-log-max nil))
-          (basic-save-buffer))
-      ;; Non-silent mode: show temporary message like auto-save-visited-mode
+    (cond
+     ;; Silent mode: suppress all messages
+     (auto-save-visited-local-silent
+      (let ((inhibit-message t)
+            (message-log-max nil))
+        (basic-save-buffer)))
+     ;; Non-silent mode: show temporary message like auto-save-visited-mode
+     ('else
       (let ((message-log-max nil))
         (with-temp-message (format "Auto-saving %s..." (buffer-name))
-          (basic-save-buffer))))))
+          (basic-save-buffer)))))))
 
 (defun auto-save-visited-local--start-timer ()
   "Start the auto-save timer for the current buffer."
@@ -94,7 +96,7 @@ Aligned with `auto-save-visited-mode' behavior."
         (condition-case err
             (auto-save-visited-local--save-buffer)
           (error
-           (unless auto-save-visited-local-silent
+           (when (not auto-save-visited-local-silent)
              (message "Auto-save-visited-local error: %s" (error-message-string err)))))))))
 
 (defun auto-save-visited-local--stop-timer ()
@@ -130,18 +132,19 @@ The behavior is aligned with `auto-save-visited-mode':
 See also `auto-save-visited-mode' for the global equivalent."
   :lighter " AutoSave"
   :group 'auto-save-visited-local
-  (if auto-save-visited-local-mode
-      (progn
-        (unless (buffer-file-name)
-          (setq auto-save-visited-local-mode nil)
-          (user-error "Buffer must be visiting a file to use auto-save-visited-local"))
-        (auto-save-visited-local--start-timer)
-        (unless auto-save-visited-local-silent
-          (message "Auto-save-visited-local enabled for %s (interval: %ds)"
-                   (buffer-name) auto-save-visited-local-interval)))
+  (cond
+   (auto-save-visited-local-mode
+    (when (not (buffer-file-name))
+      (setq auto-save-visited-local-mode nil)
+      (user-error "Buffer must be visiting a file to use auto-save-visited-local"))
+    (auto-save-visited-local--start-timer)
+    (when (not auto-save-visited-local-silent)
+      (message "Auto-save-visited-local enabled for %s (interval: %ds)"
+               (buffer-name) auto-save-visited-local-interval)))
+   ('else
     (auto-save-visited-local--stop-timer)
-    (unless auto-save-visited-local-silent
-      (message "Auto-save-visited-local disabled for %s" (buffer-name)))))
+    (when (not auto-save-visited-local-silent)
+      (message "Auto-save-visited-local disabled for %s" (buffer-name))))))
 
 ;; Cleanup timer when buffer is killed
 (add-hook 'kill-buffer-hook
