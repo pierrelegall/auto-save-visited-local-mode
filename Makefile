@@ -3,7 +3,7 @@ EMACS = emacs
 
 # Package details
 PACKAGE = auto-save-visited-local-mode
-VERSION = 0.1.0
+VERSION = 0.1.1
 
 # Files
 EL_FILES = $(PACKAGE).el

@@ -4,7 +4,7 @@
 
 ;; Author: Pierre Le Gall <pierre@legall.im>
 ;; Maintainer: Pierre <pierre@legall.im>
-;; Version: 0.1.0
+;; Version: 0.1.1
 ;; Package-Requires: ((emacs "26.1"))
 ;; Keywords: convenience files autosave
 ;; URL: https://github.com/pierrelegall/auto-save-visited-local-mode
