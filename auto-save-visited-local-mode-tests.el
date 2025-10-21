@@ -385,6 +385,79 @@
             (should-not (memq timer timer-idle-list)))))
     (asvlm-test-teardown)))
 
+;;; Tests for Hook Management
+
+(ert-deftest auto-save-visited-local-mode/hook-not-set-initially ()
+  "Test that kill-buffer-hook is NOT set before mode is enabled."
+  (asvlm-test-setup)
+  (unwind-protect
+      (asvlm-test-with-temp-buffer "test.txt" "content"
+        ;; Hook should not be present in a fresh buffer
+        (should-not (memq #'auto-save-visited-local--stop-timer kill-buffer-hook))
+        ;; kill-buffer-hook should not be buffer-local yet
+        (should-not (local-variable-p 'kill-buffer-hook)))
+    (asvlm-test-teardown)))
+
+(ert-deftest auto-save-visited-local-mode/hook-added-on-enable ()
+  "Test that kill-buffer-hook is added when mode is enabled."
+  (asvlm-test-setup)
+  (unwind-protect
+      (asvlm-test-with-temp-buffer "test.txt" "content"
+        ;; Hook should not be present initially
+        (should-not (memq #'auto-save-visited-local--stop-timer kill-buffer-hook))
+
+        ;; Enable mode
+        (auto-save-visited-local-mode 1)
+
+        ;; Hook should now be present (buffer-local)
+        (should (local-variable-p 'kill-buffer-hook))
+        (should (memq #'auto-save-visited-local--stop-timer kill-buffer-hook))
+
+        ;; Clean up
+        (auto-save-visited-local-mode -1))
+    (asvlm-test-teardown)))
+
+(ert-deftest auto-save-visited-local-mode/hook-removed-on-disable ()
+  "Test that kill-buffer-hook is removed when mode is disabled."
+  (asvlm-test-setup)
+  (unwind-protect
+      (asvlm-test-with-temp-buffer "test.txt" "content"
+        ;; Enable mode
+        (auto-save-visited-local-mode 1)
+        (should (memq #'auto-save-visited-local--stop-timer kill-buffer-hook))
+
+        ;; Disable mode
+        (auto-save-visited-local-mode -1)
+
+        ;; Hook should be removed
+        (should-not (memq #'auto-save-visited-local--stop-timer kill-buffer-hook)))
+    (asvlm-test-teardown)))
+
+(ert-deftest auto-save-visited-local-mode/hook-is-buffer-local ()
+  "Test that the kill-buffer-hook is buffer-local, not global."
+  (asvlm-test-setup)
+  (unwind-protect
+      (let* ((file1 (asvlm-test-create-file "test1.txt" "content1"))
+             (file2 (asvlm-test-create-file "test2.txt" "content2"))
+             (buf1 (find-file-noselect file1))
+             (buf2 (find-file-noselect file2)))
+        (unwind-protect
+            (progn
+              ;; Enable mode only in buf1
+              (with-current-buffer buf1
+                (auto-save-visited-local-mode 1)
+                (should (memq #'auto-save-visited-local--stop-timer kill-buffer-hook)))
+
+              ;; buf2 should NOT have the hook
+              (with-current-buffer buf2
+                (should-not (memq #'auto-save-visited-local--stop-timer kill-buffer-hook))))
+
+          (with-current-buffer buf1
+            (auto-save-visited-local-mode -1)
+            (kill-buffer))
+          (kill-buffer buf2)))
+    (asvlm-test-teardown)))
+
 ;;; Tests for Configuration
 
 (ert-deftest auto-save-visited-local-mode/buffer-local-interval ()
