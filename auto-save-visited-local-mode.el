@@ -155,19 +155,14 @@ See also `auto-save-visited-mode' for the global equivalent."
       (user-error "Buffer must be visiting a file to use auto-save-visited-local"))
     (auto-save-visited-local--start-timer)
     (when (not auto-save-visited-local-silent)
-      (message "Auto-save-visited-local enabled for %s (interval: %ds)"
-               (buffer-name) auto-save-visited-local-interval)))
+      (message "Auto-Save-Visited-Local mode enabled for %s (interval: %ds)"
+               (buffer-name) auto-save-visited-local-interval))
+    (add-hook 'kill-buffer-hook #'auto-save-visited-local--stop-timer nil t))
    ('else
     (auto-save-visited-local--stop-timer)
     (when (not auto-save-visited-local-silent)
-      (message "Auto-save-visited-local disabled for %s" (buffer-name))))))
-
-;; Cleanup timer when buffer is killed
-(add-hook 'kill-buffer-hook
-          (lambda ()
-            (when (bound-and-true-p auto-save-visited-local-mode)
-              (auto-save-visited-local--stop-timer)))
-          0 t)
+      (message "Auto-Save-Visited-Local mode disabled for %s" (buffer-name)))
+    (remove-hook 'kill-buffer-hook #'auto-save-visited-local--stop-timer t))))
 
 ;; Watch for interval changes (buffer-local)
 (defun auto-save-visited-local--interval-watcher (_symbol _newval operation where)
